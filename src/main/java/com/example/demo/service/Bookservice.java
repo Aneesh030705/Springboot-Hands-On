@@ -1,50 +1,49 @@
-package com.example.librarymanagement.controller;
+package com.example.librarymanagement.service;
 
 import com.example.librarymanagement.model.Book;
-import com.example.librarymanagement.service.BookService;
-import org.springframework.web.bind.annotation.*;
+import com.example.librarymanagement.repository.BookRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@RestController
-@RequestMapping("/books")
-public class BookController {
+@Service
+public class BookService {
 
-    private final BookService bookService;
+    private final BookRepository bookRepository;
 
-    public BookController(BookService bookService) {
-        this.bookService = bookService;
+    public BookService(BookRepository bookRepository) {
+        this.bookRepository = bookRepository;
     }
 
-    @PostMapping
-    public Book addBook(@RequestBody Book book) {
-        return bookService.addBook(book);
+    public Book addBook(Book book) {
+        return bookRepository.save(book);
     }
 
-    @GetMapping
     public List<Book> getAllBooks() {
-        return bookService.getAllBooks();
+        return bookRepository.findAll();
     }
 
-    @GetMapping("/{id}")
-    public Book getBookById(@PathVariable Long id) {
-        return bookService.getBookById(id);
+    public Book getBookById(Long id) {
+        return bookRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Book not found"));
     }
 
-    @PutMapping("/{id}")
-    public Book updateBook(@PathVariable Long id,
-                           @RequestBody Book book) {
-        return bookService.updateBook(id, book);
+    public Book updateBook(Long id, Book updatedBook) {
+        Book book = getBookById(id);
+
+        book.setTitle(updatedBook.getTitle());
+        book.setAuthor(updatedBook.getAuthor());
+        book.setPrice(updatedBook.getPrice());
+        book.setAvailable(updatedBook.getAvailable());
+
+        return bookRepository.save(book);
     }
 
-    @DeleteMapping("/{id}")
-    public String deleteBook(@PathVariable Long id) {
-        bookService.deleteBook(id);
-        return "Book deleted successfully";
+    public void deleteBook(Long id) {
+        bookRepository.deleteById(id);
     }
 
-    @GetMapping("/author")
-    public List<Book> getBooksByAuthor(@RequestParam String name) {
-        return bookService.getBooksByAuthor(name);
+    public List<Book> getBooksByAuthor(String author) {
+        return bookRepository.findByAuthor(author);
     }
 }
