@@ -1,7 +1,7 @@
-package com.example.librarymanagement.controller;
+package com.example.demo.controller;
 
-import com.example.librarymanagement.model.Book;
-import com.example.librarymanagement.service.BookService;
+import com.example.demo.model.Book;
+import com.example.demo.service.BookService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
